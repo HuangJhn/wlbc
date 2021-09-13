@@ -1,10 +1,27 @@
+# make .git* files visible to git
+!.gitignore
+!.gitattributes
 
-chapter_one/*/build/
-chapter_three/*/build/
-chapter_four/*/build/
-chapter_five/*/build/
-chapter_six/*/build/
-chapter_eight/*/build/
-lib/*/build/
-chapter_ten/*/build/
-/root/unixwlbc/chapter_five/tcpcliserv/build/
+#vim stuff
+*.swp
+
+.sconsign.dblite
+.syntastic_cpp_config
+
+build/
+package/*.deb
+*.back
+
+.idea/
+
+*.out
+*.log
+
+tags
+src/.vs
+test
+
+*.cmake
+*CMakeFiles
+*CMakeCache
+Makefile

@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/unixwlbc/chapter_three/intro/byteorder.c
+sys/socket.h
+-
+unistd.h
+-
+sys/time.h
+-
+stdio.h
+-
+stdlib.h
+-
+

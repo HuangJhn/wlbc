@@ -1,0 +1,4 @@
+/root/unixwlbc/chapter_eight/udp/build/CMakeFiles/rebuild_cache.dir
+/root/unixwlbc/chapter_eight/udp/build/CMakeFiles/edit_cache.dir
+/root/unixwlbc/chapter_eight/udp/build/CMakeFiles/udp_echo_cli01.dir
+/root/unixwlbc/chapter_eight/udp/build/CMakeFiles/udp_echo_srv01.dir

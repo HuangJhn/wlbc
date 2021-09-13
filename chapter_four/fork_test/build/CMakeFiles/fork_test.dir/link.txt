@@ -1,0 +1,1 @@
+/usr/bin/cc    CMakeFiles/fork_test.dir/main.c.o  -o fork_test -lpthread 

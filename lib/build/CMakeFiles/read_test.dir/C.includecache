@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/unixwlbc/lib/error.c
+error.h
+/root/unixwlbc/lib/error.h
+
+/root/unixwlbc/lib/error.h
+stdio.h
+-
+
+/root/unixwlbc/lib/read.c
+read.h
+/root/unixwlbc/lib/read.h
+error.h
+/root/unixwlbc/lib/error.h
+
+/root/unixwlbc/lib/read.h
+sys/socket.h
+-
+arpa/inet.h
+-
+netinet/in.h
+-
+errno.h
+-
+unistd.h
+-
+stdlib.h
+-
+string.h
+-
+stdint.h
+-
+stdio.h
+-
+

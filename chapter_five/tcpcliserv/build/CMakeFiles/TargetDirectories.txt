@@ -1,0 +1,6 @@
+/root/unixwlbc/chapter_five/tcpcliserv/build/CMakeFiles/rebuild_cache.dir
+/root/unixwlbc/chapter_five/tcpcliserv/build/CMakeFiles/edit_cache.dir
+/root/unixwlbc/chapter_five/tcpcliserv/build/CMakeFiles/tcpcli02.dir
+/root/unixwlbc/chapter_five/tcpcliserv/build/CMakeFiles/tcpserv01.dir
+/root/unixwlbc/chapter_five/tcpcliserv/build/CMakeFiles/tcpcli01.dir
+/root/unixwlbc/chapter_five/tcpcliserv/build/CMakeFiles/tcpserv02.dir

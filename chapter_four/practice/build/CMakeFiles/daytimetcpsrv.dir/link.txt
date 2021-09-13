@@ -1,0 +1,1 @@
+/usr/bin/cc   -rdynamic CMakeFiles/daytimetcpsrv.dir/daytimetcpsrv.c.o  -o daytimetcpsrv 

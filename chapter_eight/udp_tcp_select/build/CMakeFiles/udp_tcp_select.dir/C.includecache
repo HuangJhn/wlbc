@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/unixwlbc/chapter_eight/udp_tcp_select/udp_tcp_select.c
+sys/socket.h
+-
+sys/select.h
+-
+arpa/inet.h
+-
+netinet/in.h
+-
+errno.h
+-
+unistd.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+stdint.h
+-
+assert.h
+-
+

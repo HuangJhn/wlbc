@@ -1,0 +1,4 @@
+/root/unixwlbc/chapter_six/practice/build/CMakeFiles/rebuild_cache.dir
+/root/unixwlbc/chapter_six/practice/build/CMakeFiles/edit_cache.dir
+/root/unixwlbc/chapter_six/practice/build/CMakeFiles/tcp_udp_buffer.dir
+/root/unixwlbc/chapter_six/practice/build/CMakeFiles/connect_snd_rcv.dir

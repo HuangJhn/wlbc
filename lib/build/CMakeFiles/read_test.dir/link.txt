@@ -1,0 +1,1 @@
+/usr/bin/c++  -std=c++0x   CMakeFiles/read_test.dir/read_test.cpp.o CMakeFiles/read_test.dir/error.cpp.o CMakeFiles/read_test.dir/read.cpp.o  -o read_test 

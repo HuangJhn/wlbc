@@ -1,0 +1,1 @@
+/usr/bin/cc   -rdynamic CMakeFiles/daytimetcpcliv6.dir/daytimetcpcliv6.c.o  -o daytimetcpcliv6 

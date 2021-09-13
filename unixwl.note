@@ -1,0 +1,667 @@
+1.unix网络学习
+
+第一章:
+    PDU
+    计算机网络各层对等实体间的交换的单位信息称之为协议数据单元(protocol data unit,PDU)，分节(segment)就是对应于TCP传输层的PDU。
+
+    SDU
+    每层的PDU通过紧邻下层提供给本层的服务接口，作为下层的服务数据单元(service data unit,SDU)传递给下层，并由下层间接完成本层的PDU交换。
+    (如果本层的PDU大小超过紧邻下层的最大SDU限制，那么本层还需要事先把PDU划分成若干个合适的片段让下层分开载送，再在相反方向把这些片段重组层PDU)
+
+    - - - - - - - - - - - - - - - - - - - 
+
+    分节（segment）
+    即TCP的PDU，对端通告最大分节大小(maximum segment size,MSS)以及外出接口的最大传输单元(maximum transmission unit,MTU)
+    (MSS是应用层(TCP)与传输层之间的接口属性,MTU则是网络层和链路层之间的接口属性)
+
+        MSS = MTU - TCP首部 - IP首部 
+
+
+    IP数据报
+    即网络层实体之间交换的PDU称为IP数据报(IP datagram)，其长度有限：IPv4数据报最大65535字节，IPv6数据报最大65575字节
+
+    帧(frame)
+    即链路层实体间的交换的PDU称为帧(frame)，其长度取决于具体的接口。
+
+
+    练习的启发:
+    1. 在写入字符串的时候，是有必要写入'\0'这个字符的，因为这个可以准确接收端字符数组的长度(虽然返回值也可以确定一个长度,但是此长度来重设一个'\0'字符).
+
+    2. 对于小数据，如果进行多次写入，其实也只可能发一次frame，（查考MSS和MTU的大小）.
+
+    3. 一个服务换个端口依旧可以服务.
+
+
+第二章:
+    UDP
+        UDP本身不提供确认、序列号、RTT估算、超时和重传等机制。
+
+
+    TCP
+        往返时间(round-trip time,RTT)算法。
+
+        TCP连接终止
+            1. 执行主动关闭(TIME_WAIT)
+            2. 执行被动关闭(CLOSE_WAIT)
+        
+            半关闭状态-即接收到了FIN包，也对FIN进行了ACK确认，但是还没有发送自己的FIN包。
+            结论就是执行被动关闭的一端对执行主动关闭的一端的数据流动关闭了(主动---/-->被动)，执行主动关闭对执行被动关闭的一端还可以继续流动数据(被动--->主动)。
+
+        TIME_WAIT状态(持续时间 2MSL，maximum segment life)
+            1.存在的理由
+            可靠地实现TCP全双工连接的终止； 假设执行主动关闭的一方，发送最后一个ACK丢失，而导致执行被动关闭的一方重发FIN，以此来正确关闭一个连接。
+            允许老的重复的分节在网络中消逝； 后一个连接称为前一个连接的化身(incarnation)，因为它们的IP地址和端口号相同，所以必须防范某个老的连接的分组在该连接已终止之后再度出现
+        
+        LAST_ACK状态类似(服务端)
+
+    SCTP
+
+        四路握手
+
+        三路挥手(SHUTDOWN,TO ACK SHUTDOWN,FOR ACK TO SHUTDOWN COMPLETE)
+        |
+        |.
+        |  .
+        |    .
+        |      .
+        |  (SHUTDOWN)
+        |         .
+        |           .
+        |             .
+        |               .
+        |                 .|
+        |                  |
+        |                  | 处理消息
+        |                 .|
+        |               .  |
+        |             .    |
+        |           .      |
+        |         .        |
+        |      ACK         |
+        |     .            |
+        |   .              |
+        |.                 |
+        |  .               |
+             .             |
+               .           |
+             COMPLET       |
+                   .       |
+                     .     |
+                       .   |
+                         . |
+                          .|
+
+
+    套接字对
+        一个TCP连接的套接字对(socket pair)是一个定义该连接的两个端点的四元组: 本地IP地址、本地TCP端口、外地IP地址、外地TCP端口。
+        例如形式:
+                    {192.168.1.10:8090 , 192.168.1.100:10200}
+
+    缓冲区大小及限制
+        1. IPv4首部大小：20字节
+
+        2. IPv6首部大小：40字节
+
+        3. TCP头部大小：20字节
+
+
+第三章
+    字节排序函数
+        #include<netinet/in.h>
+
+        主机字节序转网络字节序(均返回字节序的值)
+        unit16_t htons(uint16_t host16bitvalue);
+
+        uint32_t htonl(uint32_t host32bitvalue);
+
+        网络字节序转主机字节序(均返回主机字节序的值)
+        unit16_t ntohs(unit16_t net16bitvalue);
+
+        uint32_t ntohl(uint32_t net32bitvalue);
+
+
+第四章 TCP套接字编程
+
+    socket函数
+
+        #include<sys/socket.h>
+        int socket(int __family,int __type,int __protocol); // (返回:若成功则为非负描述符，若出错则为-1)
+
+        __family:
+            AF_INET     ipv4协议
+            AF_INET6    ipv6协议
+            AF_LOCAL    Unix域协议
+            AF_ROUTE    路由套接字协议
+            AF_KEY      密钥套接字协议
+
+        __type:
+            SOCK_STREAM     字节流套接字
+            SOCK_DFGRAM     数据报套接字
+            SOCK_SEQPACKET  有序分组套接字
+            SOCK_RAW        原始套接字
+
+        __protocol:
+            IPROTO_TCP      TCP传输协议
+            IPPROTO_UDP     UDP传输协议
+            IPPROTO_SCTP    SCTP传输协议
+
+
+    connect函数
+
+        #include<sys/socket.h>
+        int connect(int __sockfd,struct sockaddr * __sockaddr,socklen_t __addrlen);
+        // 返回：若成功则为0，若出错则为-1
+        // 失败则表示当前的套接字（fd）不再可用，不能对这样的套接字再（fd）次调用connect函数
+
+        全局变量errno对应的错误
+        1. ETIMEOUT : 客户没有收到SYN分节的响应(且是重复发送的情况下（总共等待75秒）)
+
+        2. ECONNREFUSED : 客户的SYN分解响应为RST（复位），（1）对应目的地端口没有被监听。（2）TCP想取消已有连接。（3）TCP收到一个根本不存在的连接上的分节。
+
+        3. EHOSTUNREACH或ENRTURNREACH : 客户发出的SYN分节在路由器上引发一个“distination unreachable”(目的地不可达)
+
+
+    bind函数
+
+        bind函数把一个本地协议族地址赋予一个套接字。协议地址是32位的ipv4地址或128位的ipv6地址与16位的TCP或UDP端口号组合。
+        #include<sys/socket.h>
+
+        int bind(int __sockfd,const struct sockaddr * __sockaddr,socklen_t __addrlen);
+        // 返回 : 若成功则为0，若出错则为-1。
+
+        __sockaddr:
+            1. 只指定port，则由内核选择IP地址。
+            2. 只指定IP地址，则由内核选择端口。
+            3. 端口和IP地址都不指定，则由内核指定两者。
+            4. 指定端口和IP地址。进程选择端口和IP地址。
+
+            (对于没有指定端口的，可以用函数getsockname函数来返回协议地址)
+
+        全局变量errno对应的错误
+            1. EADDRINUSE : address already in use", 地址已经使用。
+
+
+    listen函数
+
+        listen函数仅由TCP服务器调用:
+            1. listen函数把一个未连接的套接字转换成一个被动套接字，指示内核应接受指向该套接字的连接请求。
+            2. 本函数的第二个参数规定了内核应该为相应套接字排队的最大连接个数。
+
+        #include<sys/socket.h>
+        int listen(int __sockfd,int __backlog);
+        // 返回 : 若成功则为0，若出错则为-1
+
+        监听套接字维护两个队列:
+            1. 未完成连接队列 : 客户发出的SYN到达服务器，等待三次握手完成，服务器这些套接字处于SYN_RCVD状态。
+        
+            2. 已完成连接队列 : 每个已完成握手过程的客户，服务器这些套接字处于ESTABLISTED。
+
+            (两队列之和不超过__backlog)
+
+    accept函数
+
+        #include<sys/socket.h>
+
+        int accept(int __sockfd,struct sockaddr * __cliaddr,socklen_t * __addrlen);
+        // 返回 : 若成功则为非负描述符，若出错则为-1
+
+        __cliaddr和__addrlen用来返回已连接的对端进程（客户）的协议地址。
+
+    
+    fork函数
+
+        #include<unistd.h>
+
+        pid_t fork(void);   
+        // 返回 : 在子进程中为0，在父进程中为子进程ID，若出错则为-1。
+
+        可以利用返回值来约束子进程的范围。
+
+    close函数
+
+        #include<unistd.h>
+
+        int close(int sockfd);
+        // 返回 : 若成功则为0，若出错则为-1.
+
+        // TCP连接还是将尝试发送已排队等待发送到对端的任何数据，发送完毕之后发生的是正常的TCP连接终止序列。
+
+    getsockname函数和getpeername函数
+
+        #include<sys/socket.h>
+
+        int getsockname(int __sockfd,struct sockaddr * __localaddr,socklen_t * __addrlen);
+
+        int getpeername(int __sockfd,struct sockaddr * __localaddr,socklen_t * __addrlen);
+
+        //均返回 : 若成功则为0，若出错则为-1。
+
+        //值-结果参数
+
+        // 注意:
+            1. 在没有调用bind函数的TCP客户上，connect函数成功返回后，
+                getsockname用于返回由内核赋予该连接的本地IP地址和本地端口号。
+            
+            2. 在以端口号为0调用bind(告知内核去选择本地端口号)后，getsockname用于返回内核赋予的本地端口号。
+
+        
+    
+第五章 TCP客户端/服务程序示例
+
+    wait和waitpid函数
+        #include<sys/wait.h>
+
+        pid_t wait(int * statloc);
+
+        pid_t waitpid(pid_t pid,int * statloc,int options);
+        
+        //均返回：若成功则为进场ID，若出错则为0或-1.
+
+
+第六章  select和poll函数
+
+    五种I/O模型:
+        1. 阻塞式I/O;   
+            进程阻塞于系统调用，直到内核准备好数据，并将数据从内核复制到用户空间。    
+        
+        2. 非阻塞式I/O;     
+            进程不阻塞于系统调用，询问内核是否有数据，如果没有直接返回，如果内核有数据，则内核将数据复制到用户空间。
+            (不会等待系统调用，而是直接返回)
+            (因为要进行系统调用，所以在系统调用上，从内核复制数据到用户缓冲区是有时间，这部分时间是阻塞的)
+
+        3. I/O复用;         
+            复用函数select或poll，阻塞在这两个系统调用中的某一个之上，而不是真正的IO系统调用上。
+            阻塞于上面两个函数时，等待数据报套接字变为可读。当select返回套接字可读这一条件时，我们调用系统调用时，
+            把所读数据报复制到进程应用缓冲区。
+            (因为要进行系统调用，所以在系统调用上，从内核复制数据到用户缓冲区是有时间，这部分时间是阻塞的)
+
+        4. 信号驱动;    
+            建立信号SIGNO的处理函数，sigaction函数的系统调用，并立即返回。
+            数据报准备好复制数据报，来提示我们去调用系统函数，然后内核到用户空间复制完成，返回成功提示。
+            (因为要进行系统调用，所以在系统调用上，从内核复制数据到用户缓冲区是有时间，这部分时间是阻塞的)。
+
+        5. 异步I/O;         
+            告知内核启动某个动作，并让内核在整个操作中(包括将数据从内核到我们自己的缓冲区)完成后提示我们。
+            这种模型与前面的信号驱动是由内核通知我们I/O操作何时完成的。
+
+
+    select函数
+        
+        #include <sys/select.h>
+        #include <sys/time.h>
+
+        int select(int maxfdp1,fd_set * readset,fd_set * writeset,fd_set * exceptset,const struct timeval * timeout);
+        
+        // 返回 : 若有就绪描述符则为其数目，若超时则为0(没有描述符)，若出错则为-1.
+
+        
+        描述符就绪条件:
+
+            读就绪
+                (有数据可读)
+                1. 套接字接收缓冲区中的字节数据字节数大于等于该套接字接收缓冲区低水位标记的当前大小。
+                   对这样的套接字执行读操作不会阻塞并将返回一个大于0的值（也就是准备好读入数据）。
+                   可以是因SO_RCVLOWAT套接字选项设置该套接字的低水平标记。对于TCP和UDP套接字而言，其值是1.
+
+                (接收到FIN导致读的部分被关闭)
+                2. 该连接的读半部关闭(就是接收到了FIN的TCP连接)。对这样的套接字读操作将不会阻塞并返回0。
+
+                (监听套接字上有已经完成三次握手的连接)
+                3. 该套接字是一个监听套接字且已完成的连接数不为0。对这样的套接字的accept通常不会阻塞。
+
+                (套接字出现错误，且这个错误可以通过errno获取到)
+                4. 其上有一个套接字错误待处理。对这样的套接字读操作将不阻塞并返回-1（也就是返回了一个错误）。
+                   同时把errno设置成确切的错误条件。这些待处理错误，也可以通过指定SO_ERROR套接字选项调用getsockopt获取并清除。
+
+            写就绪
+                1. 套接字发送缓冲区中的可用空间大于等于该套接字发送缓冲区低水位标记的当前大小。
+                   对这样的套接字执行写操作不会阻塞并将返回一个大于0的值（也就是准备好读入数据）。
+                   可以是因SO_SNDWAT套接字选项设置该套接字的低水平标记。对于TCP和UDP套接字而言，其值是2048.(这个值可能是不准确的)
+
+                2. 该连接的写半部关闭。对这样的套接字的写操作会引发SIGPIPE信号。（如服务器崩溃 客户端多次写入数据）。
+
+                3. 使用非阻塞式connect的套接字已建立连接，或者connect已经失败告终。
+
+                4. 其上有一个套接字错误待处理。对这样的套接字的写操作将不阻塞。
+
+            带外数据或者仍处于带外标记。那么它有异常条件待处理。
+
+
+    shutdown函数
+
+        #include <sys/socket.h>
+
+        int shutdown(int sockfd,int howto);
+        // 返回: 若成功则为0，若失败则为-1
+
+        howto参数(不受引用计数的影响):
+            SHUT_RD: 关闭读的一半 ———— 收到一个FIN。
+            SHUT_WR: 关闭写的一半 ———— 发送一个FIN。
+            SHUT_RDWR: 读和写均关闭。 
+
+    
+    poll函数
+
+        #include <poll.h>
+
+        int poll(struct pollfd * fdfamily,unsignal long nfds,int timeout);  
+
+        // 返回 : 若有就绪描述符则为其数目，若超时则为0，若出错则为-1.
+
+        // timeout : ms
+
+        // 数组元素个数由 nfds 指定。
+
+        struct pollfd
+        {
+            int     fd;
+            short   events;
+            short   revents;  
+        };
+        常值            events          revents             说明 
+        ——————————————————————————————————————————————————————————————————————————————|
+        POLLIN            1               1               普通数据或优先级数据可读        
+        POLLRDNORM        1               1               普通数据可读                  
+        POLLRDBIND        1               1               优先级数据可读                
+        POLLPRI           1               1               高优先级数据可读                    
+        ——————————————————————————————————————————————————————————————————————————————|
+        POLLOUT           1               1               普通数据可写
+        POLLWRNORM        1               1               普通数据可写
+        POLLWRBIND        1               1               优先级带数据可写
+        ——————————————————————————————————————————————————————————————————————————————|
+        POLLERR                           1               发生错误
+        POLLHUP                           1               发生挂起
+        POLLNVAL                          1               描述符不是一个打开的文件
+        ——————————————————————————————————————————————————————————————————————————————|
+
+        events是设置的是常量值，revents返回常量值。
+
+        revents返回相同的条件:
+            1. 所有TCP数据和所有UDP数据都被认为是普通数据。
+            2. TCP的带外数据被认为是优先级带数据。
+            3. 当TCP连接的读半部被关闭(收到FIN)，也被认为是普通数据，随后的读操作将返回0.
+            4. TCP连接存在错误既认为是普通数据，也可认为是错误(POLLERR)，无论哪种情况，
+               随后的读操作将返回-1，并把errno设置为合适的值。（这可用于处理诸如RST或发生超时的情况）。
+
+            5. 在监听套接字上有新连接既可以被认为是普通数据，也可认为是优先级数据。大多数实现视之为普通数据。
+
+            6. 非阻塞式connect的完成被认为是使相应的套接字可读。
+
+        
+第六章  套接字选项
+
+    getsockopt和setsockopt函数
+
+    #include <sys/socket.h>
+
+    int getsockopt(int sockfd,int level,int optname,void * optval,socklen_t * optlen);
+
+    int setsockopt(int sockfd,int level,int optname,void * optval,socklen_t   optlen);
+
+    // 均返回 : 若成功则为0，若出错则为-1.
+
+    sockfd : 必须指向一个打开的套接字描述符。
+
+    level : 指定系统中解释选项的代码或为通用的套接字选项代码，或为某个特定的于协议的代码。
+
+        SOL_SOCKET
+        IPPROTO_IP
+        IPPROTO_ICMPV6
+        IPPROTO_IPV6
+        IPPROTO_TCP
+        IPPROTO_SCTP
+
+    通用套接字选项
+
+    optval : 指向某个变量（*optval）的指针，setsockopt从*optval中取得选项待设置的新值。getsockopt则是把已获取的选项当前值存放到*optval。
+
+    SO_BROADCAST 套接字选项 本选项开启或禁止进程发送广播消息的能力。
+
+    SO_DEBUG 套接字选项 当本选项被开启，内核将为TCP在该套接字发送和接收的所有分组保留跟踪信息。
+
+    SO_DONTROUTE 套接字选项 规定外出的分组将绕过底层协议的正常路由机制。
+
+    *SO_ERROR 套接字选项 套接字的待处理错误。
+        1. 如果进程阻塞在对套接字的select调用上，那么无论是检查可读条件还是可写条件，select均返回并设置其中的一个或所有的条件。
+        2. 进程使用I/O模型，那就给进程或进程组产生一个SIGIO信号。进程然后通过访问SO_ERROR套接字选项获取so_error的值。调用函数getsockopt。
+
+    SO_KEEPALIVE 套接字选项 给TCP套接字设置保持存活(keep-alive)选项之后，如果两个小时内在该套接字内的任何一方向上都没有数据交换，TCP就自动给
+        对端发送一个保持存活探测分节(keep-alive probe)，这是一个对端必须响应的TCP分节。
+        1. 对端以期望的ACK响应。应用进程得不到任何的通知 -- 因为一切正常。两个小时之后继续发送分节。
+        2. 对端响应RST分节，它告知本端TCP: 对端已崩溃重新启动。该套接字的待处理错误被设置为ECONNRESET，套接字本身被关闭。
+        3. 对端对保持存活的探测分节没有任何的响应。TCP会继续选择重传，如果后续在重传之后没有任何的响应，则套接字关闭。
+
+    SO_LINGER 套接字选项 主要是TCP和SCTP，默认操作是close立即返回，但是如果还有数据残留在发送缓冲区中，系统会尝试把这些数据发送给对端。
+    （具体百度）
+
+    SO_OOBINDLINE 套接字选项 带外数据将被留在正常的输入队列（即在线留存）。这种情况下接收函数的MSG_OOB标志不能用来读带外数据。
+
+    *SO_RECVBUF和SO_SNDBUF套接字选项
+
+    *SO_RCVLOWAT和SO_SNDLOWAT套接字选项  接收最低水平位标记和发送最低水平位标记。
+
+    SO_RCVTIMEO和SO_SNDTIMEO套接字选项 这两个选项允许给套接字的接收和发送设置一个超时值。setsockopt和getsockopt参数是timeval结构。
+
+    *SO_REUSEADDR 和 SO_REUSEPORT 套接字选项 
+
+        （1）SO_REUSEADDR 允许启动一个监听服务器并捆绑其总所周知的接口，即使以前建立的该端口用作他们的本地端口连接仍然存在。
+
+        （2）SO_REUSEADDR 允许在同一个端口上启动同一服务器的多个实例，只要每个实例捆绑一个不同的本地IP地址。
+
+        （3）SO_REUSEADDR 允许单个进程捆绑同一个端口到多个套接字上，只要每次捆绑指定不同的本地IP地址即可。
+
+        （4） SO_REUSEADDR 允许完全重复的捆绑: 即IP地址和端口号都一致的情况 也可以进行捆绑。（仅支持UDP）。
+
+        （1） SO_REUSEPORT 本选项允许完全重复的捆绑，不过只有在想要捆绑同一IP的地址和端口的每个套接字都指定了本选项才行。
+
+        （2） SO_REUSEPORT 如果本捆绑的IP地址是 一个多播地址，那么SO_REUSEADDR和SO_REUSEPORT是等同的。
+
+
+    SO_TYPE 套接字 本选项返回套接字的类型，返回的整数是一个诸如SOCK_STREAM和SOCK_DGRAW之类的值。继承。
+
+
+
+    IPV4套接字选项 
+    
+    ...
+
+    IPV6套接字选项
+
+    ...
+
+    SCTP套接字选项
+
+    ...
+
+    fcntl函数
+
+        #include <fcntl.h>
+
+        int fcntl(int fd,int cmd,.../* int arg */);
+
+        // 返回: 若成功则取决于cmd，若出错则为-1.
+
+        操作                            fcntl               
+    ｜————————————————————————————————————————————————————｜
+    ｜设置套接字为非阻塞式I/O型           F_SETFL,O_NONBLOCK
+    ｜————————————————————————————————————————————————————｜
+    ｜设置套接字为信号的驱动式I/O型        F_SETFL,O_ASYNC     
+    ｜————————————————————————————————————————————————————｜
+
+
+
+第8章   基本UDP套接字编程
+
+    recvfrom 和 sendto 函数
+
+        #include <sys/socket.h>
+
+        ssize_t recvfrom(int sockfd,void * buff,size_t nbytes,
+            int flags,struct sockaddr * from, socklen_t * addrlen);
+
+        ssize_t sendto(int sockfd,const void * buff,size_t nbytes
+            int flags,const struct sockaddr * to,socklen_t addrlen);
+
+        // 均返回: 若成功则为读或写的字节数，若出错则为-1.
+
+        // from为空即不关心数据发送者的协议地址。
+        //    
+
+
+    UDP协议调用connect函数 以指定服务端的协议地址（ip和端口）可以在用户进程收到该connect所连接的地址协议。
+    <|> 
+    对于没有调用connect函数的UDP协议的套接字 将不会再用户进程收到icmp错误信息。
+    
+    套接字类型              write或send             不指定目的地址          指定目的地址
+    ——————————————————————————————————————————————————————————————————————————————|
+    TCP套接字               可以                        可以                EISCONN
+    ——————————————————————————————————————————————————————————————————————————————|
+    UDP套接字,已连接         可以                        可以                EISCONN
+    ——————————————————————————————————————————————————————————————————————————————|
+    UDP套接字               EDESTADDREQ                EDESTADDREQ         可以
+    ——————————————————————————————————————————————————————————————————————————————|
+
+    注：给一个UDP套接字多次调用connect函数
+        1. 给一个已连接的UDP套接字指定新的对端。
+        2. 断开连接 地址族设置为AF_UNSPEC。
+
+    
+第九章  sctp_freepaddrs函数
+
+    sctp_bindx函数
+
+        #include <netinet/sctp.h>
+
+        int sctp_bindx(int sockfd,const struct sockaddr * addrs,int addrcnt,int flags);
+
+            // 若成功返回0 否则返回-1.
+
+        sockfd是由socket函数返回的套接字描述符。第二个参数addrs是一个指向紧凑的的地址列表的指针（中间没有填充字节）
+        addrcnt是地址列表的长度，
+        flags                   说明
+        SCTP_BINDX_ADD_ADDR     往套接字里面添加地址
+        SCTP_BINDX_REM_ADDR     往套接字里面移除地址
+
+        （所有套接字地址结构的端口必须是相同的，否则调用将会失败 返回的错误码为 EINVAL）
+        （如果传入的flag存在冲突 ，sctp_bindx调用也会失败）
+
+    
+    sctp_connectx函数
+
+        #include <netinet/sctp.h>
+
+        int sctp_connectx(int sockfd,const struct sockaddr * addr,int addrcnt);
+
+            // 若成功返回0，否则返回-1.
+        
+        sctp_connectx函数用于连接到一个多宿对端主机。
+
+
+    sctp_getpaddrs函数
+
+        #include <netinet/sctp.h>
+
+        sctp_getpaddrs(int sockfd,sctp_assoc_t id, struct sockaddr ** addrs);
+
+            // 返回 若成功则为存放在addrs中的对端地址数，若失败则返回-1
+
+    
+    sctp_freepaddrs函数
+
+        #include <netinet/sctp.h>
+
+        void sctp_freepaddrs(struct sockaddr * addrs);
+
+            // addrs参数是由sctp_getpaddrs函数返回的，释放sctp_getpaddrs函数分配的资源。
+
+    sctp_getladdrs函数
+
+        #include <netinet/sctp.h>
+
+        int sctp_getladdrs(int sockfd,sctp_assoc_t id,struct sockaddr ** addrs);
+
+            // 返回 若成功则为存放在addrs中的对端地址数，若失败则返回-1
+
+    sctp_freeladdrs函数
+
+        #include <netinet/sctp.h>
+
+        // addrs参数是由sctp_getladdrs函数返回的，释放sctp_getladdrs函数分配的资源。
+
+    
+    sctp_sendmsg 函数
+
+        #include <netinet/sctp.h>
+
+        ssize_t sctp_sendmsg(int sockfd,
+                             const void * msg,
+                             size_t msgsz,
+                             const struct sockaddr * to,
+                             socklen_t  tolen,
+                             uint32_t   ppid,
+                             uint32_t   flags,
+                             uint16_t   stream,
+                             uint32_t   timetolive,
+                             uint32_t   context
+                             );
+
+                返回 ：若成功则为所写字节数，若出错则为-1.
+
+        ppid    指定将随机数据块传递给净荷协议标识符。
+        flags   用以标识任何SCTP选项。
+        stream  指定一个SCTP流号。
+        timetolive  调用者可以在lifetime参数中以毫秒为单位指定消息的声明周期，其中0表示无限生命。
+        context 用以指定可能有的用户的本地上下文关联起来（没有理解） 默认为0
+
+
+    sctp_recvmsg函数
+
+        #include <netinet/sctp.h>
+
+        ssize_t sctp_recvmsg(int sockfd,    
+                             void * msg,
+                             size_t msgsz,
+                             struct sockaddr * from,
+                             socklen_t * fromlen,
+                             struct sctp_sndrcvinfo * sinfo,
+                             int * msg_flags
+                            );
+
+                返回 ：若成功则为所读字节数，若出错则为-1.
+                
+
+        msg_flags   参数中存放可能有的消息标志。
+        sinfo       如果sctp_data_io_event被启用（默认情形）就会有与消息有关的细节信息来填充sct_sndrcvinfo结构。
+
+
+    
+    sctp_opt_info函数
+
+        相当于getsockopt函数
+
+        #include <netinet/sctp.h>
+
+        int sctp_opt_info(int sockfd,
+                          sctp_assoc_t assoc_id,
+                          int opt,
+                          void * arg,
+                          socklen_t * siz
+                        );
+                返回 ：若成功则问0，若出错则为-1.
+
+        assoc_id    参数给出可能存在的关联标识。opt参数是SCTP的套接字选项。arg给出套接字选项参数。
+        siz         是一个socklen_t类型的指针，用以存放参数的大小。
+
+
+    sctp_peeloff函数
+
+        int sctp_peeloff(int sockfd,sctp_assoc_t id);
+
+                返回 ：若成功则为一个新的套接字描述符号，若出错则为-1.
+
+    
+
+第十章  SCTP客户/服务器程序例子
+
+    安装sctp协议
+    sudo apt-get install  libsctp-dev

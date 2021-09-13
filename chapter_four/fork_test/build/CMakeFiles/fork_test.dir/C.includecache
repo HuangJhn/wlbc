@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/unixwlbc/chapter_four/fork_test/main.c
+unistd.h
+-
+stdio.h
+-
+string.h
+-
+stdlib.h
+-
+time.h
+-
+

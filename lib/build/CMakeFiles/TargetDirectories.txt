@@ -1,0 +1,3 @@
+/root/unixwlbc/lib/build/CMakeFiles/rebuild_cache.dir
+/root/unixwlbc/lib/build/CMakeFiles/read_test.dir
+/root/unixwlbc/lib/build/CMakeFiles/edit_cache.dir

@@ -1,0 +1,4 @@
+/root/unixwlbc/chapter_six/poll/build/CMakeFiles/rebuild_cache.dir
+/root/unixwlbc/chapter_six/poll/build/CMakeFiles/edit_cache.dir
+/root/unixwlbc/chapter_six/poll/build/CMakeFiles/tcpclipoll01.dir
+/root/unixwlbc/chapter_six/poll/build/CMakeFiles/tcpservpoll01.dir

@@ -1,0 +1,1 @@
+/usr/bin/cc    CMakeFiles/tcpcli01.dir/tcpcli01.c.o  -o tcpcli01 -lpthread 

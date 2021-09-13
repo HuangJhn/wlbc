@@ -1,0 +1,1 @@
+/usr/bin/cc    CMakeFiles/tcpserv02.dir/tcpserv02.c.o  -o tcpserv02 -lpthread 

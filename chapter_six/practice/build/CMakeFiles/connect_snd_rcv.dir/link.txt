@@ -1,0 +1,1 @@
+/usr/bin/cc    CMakeFiles/connect_snd_rcv.dir/connect_snd_rcv.c.o  -o connect_snd_rcv 

@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/unixwlbc/chapter_six/poll/tcpclipoll01.c
+sys/socket.h
+-
+sys/time.h
+-
+arpa/inet.h
+-
+netinet/in.h
+-
+unistd.h
+-
+errno.h
+-
+poll.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+assert.h
+-
+time.h
+-
+

@@ -1,0 +1,3 @@
+/root/unixwlbc/chapter_four/fork_test/build/CMakeFiles/rebuild_cache.dir
+/root/unixwlbc/chapter_four/fork_test/build/CMakeFiles/fork_test.dir
+/root/unixwlbc/chapter_four/fork_test/build/CMakeFiles/edit_cache.dir

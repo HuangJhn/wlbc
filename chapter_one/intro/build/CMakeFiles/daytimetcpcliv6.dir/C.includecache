@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/unixwlbc/chapter_one/intro/daytimetcpcliv6.c
+stdio.h
+-
+stdlib.h
+-
+unistd.h
+-
+sys/socket.h
+-
+arpa/inet.h
+-
+

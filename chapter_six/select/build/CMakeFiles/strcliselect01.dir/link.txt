@@ -1,0 +1,1 @@
+/usr/bin/cc    CMakeFiles/strcliselect01.dir/strcliselect01.c.o  -o strcliselect01 

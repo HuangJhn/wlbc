@@ -1,0 +1,4 @@
+/root/unixwlbc/chapter_six/select/build/CMakeFiles/rebuild_cache.dir
+/root/unixwlbc/chapter_six/select/build/CMakeFiles/edit_cache.dir
+/root/unixwlbc/chapter_six/select/build/CMakeFiles/strcliselect01.dir
+/root/unixwlbc/chapter_six/select/build/CMakeFiles/strservselect01.dir

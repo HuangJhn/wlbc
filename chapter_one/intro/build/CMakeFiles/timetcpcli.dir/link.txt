@@ -1,0 +1,1 @@
+/usr/bin/cc   -rdynamic CMakeFiles/timetcpcli.dir/timetcpcli.c.o  -o timetcpcli 

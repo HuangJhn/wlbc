@@ -1,0 +1,1 @@
+/usr/bin/cc    CMakeFiles/strservselect01.dir/strservselect01.c.o  -o strservselect01 

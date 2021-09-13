@@ -1,0 +1,5 @@
+/root/unixwlbc/chapter_one/intro/build/CMakeFiles/edit_cache.dir
+/root/unixwlbc/chapter_one/intro/build/CMakeFiles/daytimetcpsrv.dir
+/root/unixwlbc/chapter_one/intro/build/CMakeFiles/timetcpcli.dir
+/root/unixwlbc/chapter_one/intro/build/CMakeFiles/rebuild_cache.dir
+/root/unixwlbc/chapter_one/intro/build/CMakeFiles/daytimetcpcliv6.dir

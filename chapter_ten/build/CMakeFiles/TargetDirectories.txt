@@ -1,0 +1,4 @@
+/root/unixwlbc/chapter_ten/build/CMakeFiles/rebuild_cache.dir
+/root/unixwlbc/chapter_ten/build/CMakeFiles/edit_cache.dir
+/root/unixwlbc/chapter_ten/build/CMakeFiles/sctpserv01.dir
+/root/unixwlbc/chapter_ten/build/CMakeFiles/sctpclient01.dir

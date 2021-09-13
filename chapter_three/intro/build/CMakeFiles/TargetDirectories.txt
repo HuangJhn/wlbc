@@ -1,0 +1,3 @@
+/root/unixwlbc/chapter_three/intro/build/CMakeFiles/rebuild_cache.dir
+/root/unixwlbc/chapter_three/intro/build/CMakeFiles/byte.dir
+/root/unixwlbc/chapter_three/intro/build/CMakeFiles/edit_cache.dir

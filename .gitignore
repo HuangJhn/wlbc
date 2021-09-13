@@ -1,10 +1,9 @@
 
-chapter_one/build/
-chapter_three/build/
-chapter_four/build/
-chapter_five/build/
-unixwlbc/build/
-chapter_six/build/
-chapter_eight/build/
-lib/build/
-chapter_ten/build/
+chapter_one/*/build/
+chapter_three/*/build/
+chapter_four/*/build/
+chapter_five/*/build/
+chapter_six/*/build/
+chapter_eight/*/build/
+lib/*/build/
+chapter_ten/*/build/

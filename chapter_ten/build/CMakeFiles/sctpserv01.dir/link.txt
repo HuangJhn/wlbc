@@ -1,1 +1,0 @@
-/usr/bin/cc    CMakeFiles/sctpserv01.dir/sctpserv01.c.o  -o sctpserv01 -Wl,-Bstatic -lsctp -Wl,-Bdynamic 

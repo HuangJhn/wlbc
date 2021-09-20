@@ -665,3 +665,108 @@
 
     安装sctp协议
     sudo apt-get install  libsctp-dev
+
+
+
+第十一章	名字与地址转换
+	
+	#include <netdb.h>
+
+	struct hostent * gethostbyname(const char * hostname);	
+	
+		// 返回 : 若成功则为非空指针，若出错则为NULL且设置为h_errno(可以用hstrerror函数来获取对应的提示语 参数是h_errno)
+	
+		// hostname 可以是域名 点分式IP地址 主机名
+
+		struct hostent
+		{
+			char 	* 	h_name;
+			char 	**	h_aliases;
+			int		h_addrtype;		// normal is AF_INET
+			int		h_length;		// the value is 4 (byte) because the function only return IPV4
+			char	**	h_addr_list;	// address 
+		};
+
+
+	gethostbyaddr函数
+		
+		#include<netdb.h>
+		struct hostent * gethostbyaddr(const char * addr,socklen_t len,int family);
+
+			// 返回：若成功则为非空指针，若出错则为NULL且设置h_errno
+
+		addr参数实际上不是一个char *类型，而是一个指向存放IPv4地址的某个in_addr结构的指针，len参数表示这个结构的大小：对于IPv4地址为4。family参数为AF_INET。
+
+
+		（最好的案例是拿百度来说话，利用www.baidu.com获取到对应的IP地址，在随机选择一个IP地址，调用gethostbyaddr进行反向转换）
+         (依据上面的案例来说，直接利用gethostbyname得到的地址，再调用gethostbyaddr是会发生错误的，需要在host绑定域名对应的IP地址)
+
+
+    getservbyname函数
+
+        #include<netdb.h>
+
+        struct servent * getservbyname(const char * servname,const char * protocolname);
+
+            // 返回 : 若成功则为非空指针，若出错则为NULL。
+
+        struct servent 
+        {
+            char    * s_name;       // 服务名称
+            char    **s_aliases;    // 服务名称别称
+            int       s_port;       // 端口
+            char    * s_proto;      // protocol to use
+        };
+
+        注意 : 如果protocolname传入的为NULL，那么将会匹配所有的协议（TCP和UDP）
+
+    
+    getservbyport函数
+
+        #include <netdb.h>
+
+        struct servent * getservbyport(int port,const char * protocolname)
+
+            // 返回 : 如果成功则为非空指针，若出错则为NULL。
+
+        注意: 这里的端口是网络字节序的。
+
+    
+    getaddrinfo函数
+
+       #include <netdb.h>
+
+	   int getaddrinfo(const char * hostname,const char * service,const struct addrinfo * hints,struct addrinfo * * result);
+
+	   //  返回 : 若成功则返回0，若失败则为非0，
+
+	   struct addrinfo
+	   {
+			int		ai_flags;	// AI_PASSIVE , AI_CANONNAME
+			int		ai_family;	// AF_XXX
+			int 	ai_socktype;// SOCK_XXX
+			int 	ai_protocol;// 0 or IPPROTO_XXX for IPV4 and IPV6
+			socklent	ai_addrlen;	// length of ai_addr
+			char 	*ai_canonname;	// ptr to canonical name for host
+			struct  sockaddr	* ai_addr;	// ptr to socket address structure
+			struct addrinfo 	* next;		// ptr to next structure in linked list  
+	   };
+
+    
+    gai_strerror函数
+
+        #include <netdb.h>
+
+        const char * gai_strerror(int error);
+
+            // 返回 : 指向错误描述信息字符串的指针。
+
+    freeaddrinfo函数
+
+        #include <netdb.h>
+
+        void freeaddrinfo(struct addrinfo * ai);
+
+        ai参数应该指向由getaddrinfo返回的第一个addrinfo结构。这个链表中的所有结构以及由它们指向的任何动态分配的存储空间都被释放掉。
+
+        

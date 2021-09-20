@@ -1,4 +1,13 @@
-
+/**
+ * @file sctpclient01.c
+ * @author huangj (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2021-09-15
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 // linux
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -86,7 +95,7 @@ void sctpstr_cli(FILE * fp,int sockfd,SA * serverAddress,socklen_t tolen)
 
         out_sz = strlen(sendBuffer);
 
-        sctp_sendmsg(sockfd,
+        rd_sz = sctp_sendmsg(sockfd,
                      sendBuffer,
                      out_sz,
                      serverAddress,
@@ -97,6 +106,11 @@ void sctpstr_cli(FILE * fp,int sockfd,SA * serverAddress,socklen_t tolen)
                      0,
                      0
                      );
+        if(rd_sz < 0)
+        {
+            printf("send result error_code = %d.\n",errno);
+            exit(0);
+        }
         len = sizeof(peerAddress);
         // recv msg
         rd_sz = sctp_recvmsg(sockfd,
@@ -105,6 +119,12 @@ void sctpstr_cli(FILE * fp,int sockfd,SA * serverAddress,socklen_t tolen)
                              (SA*)&peerAddress,
                              &len,&sri,
                              &msg_flags);
+        printf("result = %d.\n",rd_sz);
+        if(rd_sz < 0)
+        {
+            printf("recv error_code = %d.\n",errno);
+            exit(0);
+        }
 
         // 服务将sinfo_stream　进行加操作
         // sinfo_ssn 对应的是流序列号 即 这条流所积累的序号 从0开始往上叠加

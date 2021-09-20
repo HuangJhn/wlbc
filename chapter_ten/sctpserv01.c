@@ -1,4 +1,13 @@
 
+/*
+ *  author : HuangJ
+ *
+ *  msg : 利用sctp协议 实现一个回射(echo)服务器
+ * 
+ *  time : Wed Sep 15 21:35:17 CST 2021
+ * 
+ */
+
 // linux
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -26,6 +35,7 @@ typedef struct sockaddr_in  SAI;
 // function 
 void sctp_server(const int max_stream_no);
 
+void initStreamNo(int sockfd);
 // static function declare
 
 int
@@ -48,7 +58,6 @@ sctp_server(const int max_stream_no)
     listenfd = socket(AF_INET,SOCK_SEQPACKET,IPPROTO_SCTP); // one for mutl
     if(listenfd < 0)
     {
-
         return;
     }
     SAI     serverAddress;
@@ -59,6 +68,8 @@ sctp_server(const int max_stream_no)
     serverAddress.sin_port        = htons(SERVER_PORT);
 
     assert(bind(listenfd,(SA*)&serverAddress,sizeof(serverAddress)) == 0); 
+
+    initStreamNo(listenfd);
 
     // declare sctp_sndrcvinfo var
     struct sctp_sndrcvinfo  sri;
@@ -88,14 +99,16 @@ sctp_server(const int max_stream_no)
                              BUFFER_SIZE,
                              (SA*)&clientAddress,
                              &len,&sri,&msg_flag);
-        if(stream_increment)
-        {
-            sri.sinfo_stream++;
-            if(sri.sinfo_stream >= max_stream_no)
-            {
-                sri.sinfo_stream = 0;
-            }
-        }
+        // if(stream_increment)
+        // {
+        //     sri.sinfo_stream++;
+        //     if(sri.sinfo_stream >= max_stream_no)
+        //     {
+        //         sri.sinfo_stream = 0;
+        //     }
+        // }
+        // 在做出应答之后优雅的关闭关联
+        // 书上是MSG_EOF 实际使用 SCTP_EOF flags
         sctp_sendmsg(listenfd,
                      buffer,
                      rd_sz,
@@ -107,5 +120,34 @@ sctp_server(const int max_stream_no)
                      0,
                      0);
     }
+}
+/*
+ *  @author : HuangJ 
+ * 
+ *  @msg    : 给一个未连接的sockfd设置最大的流数目 进最大流-出最大流
+ * 
+ *  @time   : Wed Sep 15 21:39:37 CST 2021
+ * 
+ */
+void initStreamNo(int sockfd)
+{
+    struct sctp_initmsg ssim;
+    bzero(&ssim,sizeof(ssim));
+    // 期望请求的流数目-即希望对端告诉自己的
+    ssim.sinit_num_ostreams = 10;
+    // 告诉对端的流数目
+    // ssim.sinit_max_instreams = 10;
+    setsockopt(sockfd,IPPROTO_SCTP,SCTP_INITMSG,&ssim,sizeof(ssim));
+}
+
+/**
+ * @brief   当关联建立时将此进程kill 
+ * 
+ * @param   
+ */
+
+void
+server()
+{
 
 }

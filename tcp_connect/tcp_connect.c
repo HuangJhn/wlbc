@@ -49,12 +49,13 @@ int tcp_connect(const char * host_name,const char * serivce_name)
             break;
         }        
     } while ((tmp = tmp->ai_next)!=NULL);
-    // 释放内存
-    freeaddrinfo(result);
-    // 连接失败了
+    // 需要在释放内存前判读
     if(tmp == NULL)
     {
         return -1;
     }
+    // 释放内存
+    freeaddrinfo(result);
+    // 连接失败了
     return sockfd;
 }

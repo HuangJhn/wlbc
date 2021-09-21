@@ -47,7 +47,9 @@ int main(int argc,char * argv[])
 {
 
     gethostbyname_func();
+	accordingByDns("github.global.ssl.fastly.net");
 	accordingByDns("www.baidu.com");
+    accordingByDns("github.com");
     return EXIT_SUCCESS;
 }
 

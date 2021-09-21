@@ -2,6 +2,7 @@
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <errno.h>
@@ -11,6 +12,7 @@
 #include <stdlib.h>
 
 void get_addr_info_test(const char * host_name,const char * service_name);
+const char * gethostname_self();
 
 /**
  * @brief 
@@ -21,7 +23,8 @@ void get_addr_info_test(const char * host_name,const char * service_name);
  */
 int main(int argc,char * argv[])
 {
-
+    char buffer_name[100];
+    bzero(buffer_name,100);
     // test case 1 that the host_name is NULL and service name is daytime
     printf("test case 1 that the host_name is NULL and service name is daytime.\n");
     get_addr_info_test(NULL,"daytime");
@@ -32,7 +35,8 @@ int main(int argc,char * argv[])
 
     // test case 3 that the host_name is local host name and service name is http
     printf("test case 3 that the host_name is local host name and service name is http.\n");
-    get_addr_info_test("iZbp12ibqc0f9rucd631pmZ","http");
+    // gethostent();
+    get_addr_info_test(gethostname(buffer_name,100),"http");
     // get_addr_info_test("iZbp12ibqc0f9rucd631pmZ","daytime");
 
     // test case 4 that host_name is a IPV4 and service name is daytime
@@ -54,7 +58,7 @@ int main(int argc,char * argv[])
     // test case 8 that in /etc/service add myself service name and port protocol
     // 如果在/etc/service中添加了对应的服务那么就会成功，如果没有就会失败
     printf("test case 8 that in /etc/service add myself service name and port protocol.\n");
-    get_addr_info_test("iZbp12ibqc0f9rucd631pmZ","huangj");
+    get_addr_info_test(gethostname(buffer_name,100),"huangj");
     return EXIT_SUCCESS;
 }
 /**
@@ -82,4 +86,27 @@ void get_addr_info_test(const char * host_name,const char * service_name)
         return;
     }
     printf("%s - success.\n\n",result->ai_canonname);
+}
+/**
+ * @brief 返回对应的主机名称
+ * 
+ * @return const char* 
+ */
+const char * gethostname_self()
+{
+    // gethostbyaddr
+    struct sockaddr_in  addr;
+    bzero(&addr,sizeof(addr));
+    addr.sin_family        = AF_INET;
+    addr.sin_port          = htons(80);       // http server port
+    addr.sin_addr.s_addr   = htonl(INADDR_ANY);
+
+    struct hostent *sh;
+    sh = gethostbyaddr(&addr,sizeof(addr),AF_INET);
+    if(!sh)
+    {
+        printf("call gethostbyaddr faild.\n");
+        return "";
+    }
+    return sh->h_name;
 }

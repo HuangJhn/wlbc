@@ -47,6 +47,10 @@ int main(int argc,char * argv[])
     // test case 3 that use public ip 
     printf("test case 3 that use public ip \n");
     hostbyname("180.76.114.47");
+
+    // test case 3 that bind host 
+    printf("with github.com \n");
+    hostbyname("github.com");
     return EXIT_SUCCESS;
 }
 /**

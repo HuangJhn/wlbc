@@ -58,6 +58,9 @@ int main(int argc,char * argv[])
     // five test case 
     getServerByServerName("ping","udp");
 
+    getServerByServerName("chargen","tcp");
+
+
     printf("--------------------------------------");
 
     // for(int index = 0; index < 1000; index++)

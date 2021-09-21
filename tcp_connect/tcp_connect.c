@@ -52,7 +52,7 @@ int tcp_connect(const char * host_name,const char * serivce_name)
     // 需要在释放内存前判读
     if(tmp == NULL)
     {
-        return -1;
+        sockfd = -1;
     }
     // 释放内存
     freeaddrinfo(result);

@@ -36,6 +36,7 @@
     UDP
         UDP本身不提供确认、序列号、RTT估算、超时和重传等机制。
 
+        数据报协议
 
     TCP
         往返时间(round-trip time,RTT)算法。
@@ -736,6 +737,8 @@
 
        #include <netdb.h>
 
+        // 根据host和server 以及 目标 hints 获取到对应的result addrinfo 信息
+
 	   int getaddrinfo(const char * hostname,const char * service,const struct addrinfo * hints,struct addrinfo * * result);
 
 	   //  返回 : 若成功则返回0，若失败则为非0，
@@ -765,8 +768,43 @@
 
         #include <netdb.h>
 
+        // 释放getaddrinfo函数中分配的内存 result 参数
+
         void freeaddrinfo(struct addrinfo * ai);
 
         ai参数应该指向由getaddrinfo返回的第一个addrinfo结构。这个链表中的所有结构以及由它们指向的任何动态分配的存储空间都被释放掉。
+
+        
+    getnameinfo函数  
+
+        #include <netdb.h>
+
+        // 根据套接字地址返回对应的主机信息和服务信息
+        int getnameinfo(const struct sockaddr * sockaddr,
+            socklen_t addrlen,
+            char * host,
+            socklen_t hostlen,
+            char * serv,
+            socklen_t servlen,
+            int flags);
+
+            // 返回 : 若成功则返回0，若失败则返回非0。
+
+        如果hostlen或servlen被设置为0，则不返回对应的信息。
+
+        flags
+
+        常  值                      说  明
+
+        NI_DGRAM                    数据报服务
+        NI_NAMEREQD                 若不能从地址解析出名字则返回错误
+        NI_NOFQDN                   只返回FQDN的主机部分
+        NI_NUMBERICHOST             以数串格式返回主机字符串
+        NI_NUMBERISCOPE             以数串格式返回范围标识字符串
+        NI_NUMBERICSERV             以数串格式返回服务字符串
+
+        NI_NOFQDN标志导致返回的主机名第一个点号之后的内容被截取(www.baidu.com --> www)
+
+        NI_NUMBERICHOST标志告知getnameinfo不要调用DNS（因为要访问DNS服务 需要耗费时间）
 
         

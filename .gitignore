@@ -29,3 +29,4 @@ Makefile
 build/
 *build/
 ./*/build/
+./chapter_eight/build/

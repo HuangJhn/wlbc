@@ -25,8 +25,5 @@ test
 *CMakeFiles
 *CMakeCache
 Makefile
+buid/#
 1
-build/
-*build/
-./*/build/
-./chapter_eight/build/

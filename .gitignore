@@ -26,5 +26,6 @@ test
 *CMakeCache
 Makefile
 1
-build
-*build
+build/
+*build/
+./*/build/

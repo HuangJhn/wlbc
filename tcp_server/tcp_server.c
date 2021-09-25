@@ -91,6 +91,8 @@ int tcp_server(const char * host_name,const char * server_name)
     if(tmp == NULL)
     {
         // 创建失败
+        // getpeername();
+        getsockname()
         sockfd = -1;
     }
     freeaddrinfo(result);

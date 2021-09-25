@@ -1,1 +1,0 @@
-/usr/bin/cc    CMakeFiles/udp_echo_cli01.dir/udp_echo_cli01.c.o  -o udp_echo_cli01 

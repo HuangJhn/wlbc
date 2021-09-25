@@ -1,3 +1,0 @@
-/root/unixwlbc/chapter_eight/udp_tcp_select/build/CMakeFiles/rebuild_cache.dir
-/root/unixwlbc/chapter_eight/udp_tcp_select/build/CMakeFiles/udp_tcp_select.dir
-/root/unixwlbc/chapter_eight/udp_tcp_select/build/CMakeFiles/edit_cache.dir

@@ -42,7 +42,13 @@ const char * sock_ntop(struct sockaddr * sa,socklen_t len)
     }
     case sizeof(struct sockaddr_in6):
     {
-
+        struct sockaddr_in6 * sai = (struct sockaddr_in6*)sa;
+        static char buffer[140];
+        bzero(buffer,140);
+        inet_ntop(sai->sin6_family,&sai->sin6_addr,buffer,128);
+        uint16_t port = ntohs(sai->sin6_port);
+        snprintf(buffer+strlen(buffer),6,":%d",port);
+        return buffer;
     }
     }
 }

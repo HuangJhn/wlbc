@@ -872,3 +872,23 @@
             LOG_PID         随每个日志消息登记进程ID。
 
         facility参数与syslog函数的priority组成部分一样，只是当前设置确定的是整个日志的设施值。
+
+
+    inetd守护进程
+
+        inted守护进程启动其他进程作为守护进程
+
+        字段                            说明
+
+        service-name                必须在/etc/services文件中定义
+        socket-type                 stream(TCP)或者DGRAM(对于UDP)
+        protocol                    必须在/etc/protocols文件中定义；tcp或udp
+        wait-flag                   对于TCP一般为nowait，对于UDP一般为wait （不等待与等待）
+        login-name                  来自/etc/password的用户名，一般为root。
+        server-name                 调用exec指定的完整路径名
+        server-program-argument     调用exec指定的命令行参数
+
+        example(/etc/inetd.conf):
+
+            ftp     stream      tcp     nowait      root      /usr/bin/ftpd   ftpd -1
+            tftp    dgram       udp     wait        root      /usr/bin/tftpd  tftpd -s /ftpboot   
